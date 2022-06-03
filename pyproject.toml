@@ -6,6 +6,11 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+pymongo = {extras = ["srv"], version = "^4.1.1"}
+pandas = "^1.4.2"
+loguru = "^0.6.0"
+python-telegram-bot = "^13.12"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 

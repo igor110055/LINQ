@@ -29,7 +29,9 @@ def edit_watchlist(action, document, ticker, agg):
     return document
 
 
-def add_delete(action=None, mongo=None, usr_id=None, usr_name=None, in_msg=None, **kwargs):
+def add_delete(
+    action=None, mongo=None, usr_id=None, usr_name=None, in_msg=None, **kwargs
+):
     """
     Allows a user to add/delete a watch to/from their watchlist
     """

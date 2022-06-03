@@ -44,7 +44,9 @@ class CommandRegistry(Updater):
             }
 
             for conn_name in conns:
-                kwargs.update({conn_name: get_connections(conn_name, *conns[conn_name])})
+                kwargs.update(
+                    {conn_name: get_connections(conn_name, *conns[conn_name])}
+                )
 
             ret = fn(**kwargs)
 
@@ -79,4 +81,6 @@ def unknown(update: Update, context: CallbackContext):
 
 def unknown_text(update: Update, context: CallbackContext):
     """function to deal with unrecognised text"""
-    update.message.reply_text("Sorry I can't recognise you, you said '%s'" % update.message.text)
+    update.message.reply_text(
+        "Sorry I can't recognise you, you said '%s'" % update.message.text
+    )
