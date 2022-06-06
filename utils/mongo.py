@@ -1,20 +1,53 @@
-from multiprocessing import AuthenticationError
-from pymongo import MongoClient
-import pandas as pd
-from dotenv import load_dotenv
 import os
+import sys
+from datetime import datetime, timedelta
+from pprint import pprint
+
+import pandas as pd
+import pymongo
+from dotenv import load_dotenv
+from loguru import logger
+
+load_dotenv()
 
 
-class DataBase:
+class DataBase(pymongo.database.Database):
+
     mongo_user = os.environ.get("MONGO_USER", None)
     mongo_pwd = os.environ.get("MONGO_PWD", None)
-    if not (mongo_pwd and mongo_user):
-        raise AuthenticationError(
-            "Missing Mongo auth. Please define MONGO_USER and MONGO_PWD in .env"
+    if not (isinstance(mongo_pwd, str) and isinstance(mongo_user, str)):
+        logger.warning("Missing Mongo auth. Please define MONGO_USER and MONGO_PWD in .env")
+
+    def __init__(self, database_name) -> None:
+        client = pymongo.MongoClient(
+            "mongodb+srv://{}:{}@linq.aybjjlo.mongodb.net/?retryWrites=true&w=majority".format(
+                self.mongo_user, self.mongo_pwd
+            )
         )
 
-    def __init__(self) -> None:
-        load_dotenv()
-        self.conn = MongoClient(
-            "mongodb+srv://{}:{}@linq.aybjjlo.mongodb.net/?retryWrites=true&w=majority"
-        )
+        try:
+            client.server_info()
+            super().__init__(client, database_name)
+            logger.success("Initialised connection to MongoDB database {}".format(database_name))
+
+        except Exception as e:
+            logger.error("INVALID MONGO CONNECTION: {}".format(e))
+            sys.exit()
+
+    def get_user_info(self, **kwargs):
+        if ("tgID" not in kwargs) or ("tgUsername" not in kwargs):
+            raise KeyError("The user query will return more than one user.")
+
+        else:
+            return self.users.find(kwargs)
+
+
+@logger.catch
+def main():
+    db = DataBase("LINQ")
+
+    print(db.list_collection_names())
+
+
+if __name__ == "__main__":
+    main()
